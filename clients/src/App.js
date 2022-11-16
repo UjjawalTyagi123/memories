@@ -1,39 +1,28 @@
-import React ,{useState,useEffect} from "react";
-import {Container,AppBar,Typography,Grow,Grid} from "@material-ui/core"
-import { useDispatch } from "react-redux";
-import memories from "./images/memories.png"
-import Form from "./components/form/form";
-import Posts from "./components/posts/posts";
-import useStyles from "./styles"
-import {getposts} from "./actions/posts"
-export default function App(){
-    const [currentId,setCurrentId]=useState(null);
-    const classes=useStyles();
-    const dispatch=useDispatch();
+import React from 'react';
+import { Container } from '@material-ui/core';
+import { BrowserRouter as Router, Route, Routes,Navigate} from 'react-router-dom'
+import Home from './components/Home/Home';
+import Navbar from './components/Navbar/Navbar';
+import Auth from './components/Auth/Auth';
+import PostDetails from './components/postdetails/PostDetails';
+
+const App = () => {
+  const user=JSON.parse(localStorage.getItem('profile'))
+  return(
+  <Router>
+    <Container maxWidth="xl">
+      <Navbar />
+      <Routes>
+      <Route path="/" element={<Navigate replace to="/posts" />} />
+        <Route exact path="/posts" element={<Home/>}/>
+        <Route exact path="/posts/search" element={<Home/>}/> 
+        <Route exact path="/posts/:id" element={<PostDetails/>}/>
+        <Route exact path="/auth" element={!user?<Auth/>  : <Navigate replace to="/posts" />}/>
+
+      </Routes>
    
-    useEffect(() => {
-      dispatch(getposts());
-    }, [currentId,dispatch]);
+    </Container>
+   </Router>
+)};
 
-    return(
-        <Container maxWidth="lg">
-        <AppBar className={classes.appBar} position="static" color="inherit">
-          <Typography className={classes.heading} variant="h2" align="center">Memories</Typography>
-          <img className={classes.image} src={memories} alt="icon" height="60" />
-        </AppBar>
-        <Grow in>
-          <Container>
-            <Grid className={classes.mainContainer} container justify="space-between" alignItems="stretch" spacing={3}>
-              <Grid item xs={12} sm={7}>
-                <Posts  setCurrentId={setCurrentId}/>
-              </Grid>
-              <Grid item xs={12} sm={4}>
-
-                <Form  currentId={currentId} setCurrentId={setCurrentId}/>
-              </Grid>
-            </Grid>
-          </Container>
-        </Grow>
-      </Container>
-    )
-}
+export default App;
